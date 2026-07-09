@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinayak — Loön @ Zenith | Case File: Student Record Comparator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:        #f1ead9;
+    --paper-deep:   #e7ddc6;
+    --ink:          #23301f;
+    --ink-soft:     #55604c;
+    --folder:       #2e4a37;
+    --folder-deep:  #1f342a;
+    --brass:        #a97d34;
+    --red:          #9c2b28;
+    --red-soft:     #c1483f;
+    --rule:         #d3c6a6;
+    --display: 'Fraunces', Georgia, serif;
+    --body: 'Source Serif 4', Georgia, serif;
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(46,74,55,0.05), transparent 40%),
+      radial-gradient(circle at 85% 92%, rgba(169,125,52,0.06), transparent 45%);
+    min-height: 100vh;
+  }
+
+  a { color: inherit; }
+
+  header {
+    position: relative;
+    padding: 3.4em 1.5em 3em;
+    text-align: center;
+    border-bottom: 2px solid var(--folder);
+  }
+
+  header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(180deg, transparent 0 41px, rgba(35,48,31,0.045) 41px 42px);
+    pointer-events: none;
+  }
+
+  .case-no {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    color: var(--brass);
+    border: 1px solid var(--brass);
+    padding: 0.35em 0.9em;
+    border-radius: 2px;
+    margin-bottom: 1.4em;
+    transform: rotate(-1deg);
+    opacity: 0;
+    animation: settle 0.6s 0.1s ease-out forwards;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-size: clamp(2.1rem, 5.4vw, 3.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.45em;
+    color: var(--folder-deep);
+    opacity: 0;
+    animation: settle 0.7s 0.22s ease-out forwards;
+  }
+
+  header p {
+    max-width: 34em;
+    margin: 0 auto;
+    font-size: 1.08rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    font-style: italic;
+    opacity: 0;
+    animation: settle 0.7s 0.34s ease-out forwards;
+  }
+
+  .crest {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 1em;
+    opacity: 0;
+    animation: settle 0.6s 0.02s ease-out forwards;
+  }
+
+  .vinayak-name {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(2.6rem, 9vw, 5rem);
+    letter-spacing: -0.015em;
+    line-height: 1.05;
+    display: inline-block;
+    color: var(--brass);
+    background: linear-gradient(100deg, #fff6df 0%, var(--brass) 40%, #fff6df 55%, var(--red-soft) 80%, #fff6df 100%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 5s ease-in-out infinite, settle 0.7s 0.22s ease-out forwards;
+    opacity: 0;
+    text-shadow:
+      1px 1px 0 #7a5a22,
+      2px 2px 0 #7a5a22,
+      3px 3px 0 #6b4d1d,
+      4px 4px 0 #6b4d1d,
+      5px 5px 8px rgba(31,52,42,0.45);
+  }
+
+  @supports not (background-clip: text) {
+    .vinayak-name { color: var(--folder-deep); -webkit-text-fill-color: initial; }
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes settle {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .loon-line {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.42em;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin: 0.35em 0 0.15em;
+  }
+
+  .subtitle-line {
+    display: block;
+    font-size: 0.55em;
+    color: var(--ink-soft);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  main {
+    max-width: 62em;
+    margin: 0 auto;
+    padding: 3em 1.5em 5em;
+  }
+
+  section { margin-bottom: 3em; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin: 0 0 1em;
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+  }
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .intake {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  @media (max-width: 760px) {
+    .intake { grid-template-columns: 1fr; }
+    .brad { transform: rotate(90deg); margin: -0.6em auto; z-index: 2; }
+  }
+
+  .mode-toggle {
+    display: inline-flex;
+    border: 1.5px solid var(--folder);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 1.6em;
+  }
+
+  .mode-toggle button {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    background: #faf6ea;
+    color: var(--ink-soft);
+    border: none;
+    padding: 0.7em 1.2em;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .mode-toggle button + button { border-left: 1.5px solid var(--folder); }
+
+  .mode-toggle button.active {
+    background: var(--folder-deep);
+    color: var(--paper);
+  }
+
+  .single-card {
+    max-width: 30em;
+  }
+
+  .sheet-picks {
+    display: none;
+    margin-top: 1.6em;
+    gap: 1.2em;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .sheet-picks.ready { display: flex; }
+
+  .sheet-pick label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 0.4em;
+  }
+
+  .sheet-pick select {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    background: #faf6ea;
+    border: 1px solid var(--folder);
+    color: var(--ink);
+    padding: 0.55em 0.8em;
+    border-radius: 2px;
+    min-width: 12em;
+  }
+
+  .sheet-versus {
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--brass);
+    font-size: 1rem;
+    padding-bottom: 0.6em;
+  }
+
+  .card {
+    background: #faf6ea;
+    border: 1px solid var(--rule);
+    box-shadow: 0 1px 0 rgba(35,48,31,0.04), 0 12px 24px -18px rgba(35,48,31,0.35);
+    padding: 1.8em 1.7em;
+    position: relative;
+    transition: box-shadow 0.25s, border-color 0.2s, transform 0.25s;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 1px 0 rgba(35,48,31,0.04), 0 20px 34px -18px rgba(35,48,31,0.4);
+  }
+
+  .card.drag-over {
+    border-color: var(--red-soft);
+    box-shadow: 0 0 0 3px rgba(156,43,40,0.12), 0 12px 24px -18px rgba(35,48,31,0.35);
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, var(--folder) 0 8px, transparent 8px 14px);
+    opacity: 0.5;
+  }
+
+  .card .tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .card h3 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 1.5rem;
+    margin: 0.2em 0 0.9em;
+    color: var(--folder-deep);
+  }
+
+  .dropzone {
+    border: 1.5px dashed var(--rule);
+    border-radius: 3px;
+    padding: 1.6em 1em;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .dropzone:hover { border-color: var(--brass); }
+
+  .dropzone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .dropzone .hint {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+  }
+
+  .dropzone .filename {
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    color: var(--folder-deep);
+    font-weight: 500;
+    margin-top: 0.4em;
+    word-break: break-all;
+  }
+
+  .brad {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.6em;
+  }
+
+  .brad svg { width: 46px; height: 46px; }
+
+  .controls {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.4em;
+    flex-wrap: wrap;
+    margin-top: 1.6em;
+  }
+
+  .key-group { display: flex; flex-direction: column; gap: 0.5em; max-width: 34em; }
+
+  .key-group > label {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .key-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+  }
+
+  .key-checks label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    background: #faf6ea;
+    border: 1px solid var(--rule);
+    padding: 0.4em 0.75em;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .key-checks label:has(input:checked) {
+    border-color: var(--folder);
+    background: rgba(46,74,55,0.08);
+    color: var(--folder-deep);
+    font-weight: 600;
+  }
+
+  .key-checks input[type="checkbox"] {
+    accent-color: var(--folder-deep);
+    width: 0.9em;
+    height: 0.9em;
+  }
+
+  .key-hint {
+    font-family: var(--body);
+    font-style: italic;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  #compareBtn {
+    position: relative;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: var(--red);
+    color: var(--paper);
+    border: none;
+    padding: 0.85em 1.8em;
+    border-radius: 2px;
+    cursor: pointer;
+    transform: rotate(-1deg);
+    transition: transform 0.12s, background 0.15s, box-shadow 0.15s;
+    box-shadow: 0 6px 14px -6px rgba(156,43,40,0.55);
+  }
+
+  #compareBtn:hover:not(:disabled) { background: #8a2320; transform: rotate(-1deg) scale(1.03); }
+  #compareBtn:active:not(:disabled) { transform: rotate(-1deg) scale(0.97); }
+  #compareBtn:disabled { background: #b9b2a0; box-shadow: none; cursor: not-allowed; transform: none; }
+  #compareBtn:focus-visible { outline: 2px solid var(--folder); outline-offset: 3px; }
+
+  #status {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--red);
+    margin-top: 1em;
+    min-height: 1.3em;
+  }
+
+  .summary {
+    display: flex;
+    gap: 2.4em;
+    flex-wrap: wrap;
+    margin-bottom: 2em;
+    padding: 1.4em 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .stat .n {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 2.1rem;
+    line-height: 1;
+    color: var(--folder-deep);
+    display: block;
+  }
+  .stat.flagged .n { color: var(--red); }
+
+  .stat .l {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1em;
+    flex-wrap: wrap;
+    gap: 0.8em;
+  }
+
+  .toolbar .count {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+
+  #downloadBtn {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+    background: none;
+    border: 1px solid var(--folder);
+    color: var(--folder-deep);
+    padding: 0.55em 1.1em;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  #downloadBtn:hover { background: var(--folder-deep); color: var(--paper); }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--folder);
+    border-radius: 2px;
+  }
+
+  table#report {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    background: #faf6ea;
+  }
+
+  table#report th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--folder-deep);
+    padding: 0.8em 1em;
+  }
+
+  table#report td {
+    padding: 0.75em 1em;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: middle;
+  }
+
+  table#report tbody tr:hover td { background: rgba(46,74,55,0.045); }
+
+  td.id { font-family: var(--mono); font-size: 0.84rem; color: var(--ink-soft); }
+  td.name { font-family: var(--body); font-weight: 600; }
+  td.col-name { font-family: var(--mono); font-size: 0.8rem; color: var(--folder-deep); }
+
+  .stampval {
+    position: relative;
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.86rem;
+    padding: 0.15em 0.6em;
+  }
+
+  .stampval.diff { color: var(--red); font-weight: 600; }
+
+  .stampval.diff::before {
+    content: "";
+    position: absolute;
+    inset: -0.35em -0.5em;
+    border: 1.6px solid var(--red-soft);
+    border-radius: 60% 55% 62% 58% / 58% 60% 55% 62%;
+    opacity: 0.75;
+    pointer-events: none;
+  }
+
+  tr:nth-child(3n) .stampval.diff::before { transform: rotate(-3deg); }
+  tr:nth-child(3n+1) .stampval.diff::before { transform: rotate(2deg); }
+  tr:nth-child(3n+2) .stampval.diff::before { transform: rotate(-1.5deg); }
+
+  .stampval.missing { color: var(--ink-soft); font-style: italic; }
+
+  .presence-flag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 2.6em 1.5em;
+    border: 1.5px dashed var(--folder);
+    border-radius: 3px;
+    position: relative;
+  }
+
+  .empty-state .stamp {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--folder-deep);
+    border: 2.5px solid var(--folder-deep);
+    border-radius: 55% 60% 58% 62% / 60% 55% 62% 58%;
+    padding: 0.6em 1.4em;
+    transform: rotate(-3deg);
+  }
+
+  footer {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: #000000;
+    padding: 2.2em 1.5em 3em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <svg class="crest" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="27" cy="27" r="25" stroke="#a97d34" stroke-width="1.6"/>
+    <circle cx="27" cy="27" r="19" stroke="#9c2b28" stroke-width="1"/>
+    <path d="M27 12 L31 24 L44 24 L33.5 31.5 L37.5 43.5 L27 36 L16.5 43.5 L20.5 31.5 L10 24 L23 24 Z" fill="#2e4a37" opacity="0.9"/>
+    <text x="27" y="30" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#f1ead9" font-weight="600">V</text>
+  </svg>
+  <span class="case-no">Case File No. 0417 — Student Records</span>
+  <h1><span class="vinayak-name">Vinayak<span class="loon-line">Loon at Zenith</span></span><span class="subtitle-line">The Record Comparator</span></h1>
+  <p>Two registers, laid side by side — whether they're two separate files, or two sheets tucked inside the same workbook. Every disagreement gets circled, so nothing slips past the file.</p>
+</header>
+
+<main>
+  <section>
+    <p class="section-label">Choose how to compare</p>
+    <div class="mode-toggle" role="group" aria-label="Comparison mode">
+      <button type="button" id="modeTwoFilesBtn" class="active">Two separate files</button>
+      <button type="button" id="modeOneFileBtn">Two sheets in one file</button>
+    </div>
+
+    <div class="intake" id="intakeTwoFiles">
+      <div class="card" id="card1">
+        <span class="tag">Exhibit A</span>
+        <h3>Sheet 1</h3>
+        <div class="dropzone" id="drop1">
+          <input type="file" id="file1" accept=".xlsx,.xls,.csv">
+          <div class="hint">Drop file here, or click to browse</div>
+          <div class="filename" id="name1"></div>
+        </div>
+      </div>
+
+      <div class="brad" aria-hidden="true">
+        <svg viewBox="0 0 46 46" fill="none">
+          <circle cx="23" cy="23" r="12" fill="#a97d34"/>
+          <circle cx="23" cy="23" r="12" stroke="#7a5a22" stroke-width="1.5"/>
+          <line x1="14" y1="17" x2="32" y2="29" stroke="#7a5a22" stroke-width="1.4"/>
+          <line x1="14" y1="29" x2="32" y2="17" stroke="#7a5a22" stroke-width="1.4"/>
+        </svg>
+      </div>
+
+      <div class="card" id="card2">
+        <span class="tag">Exhibit B</span>
+        <h3>Sheet 2</h3>
+        <div class="dropzone" id="drop2">
+          <input type="file" id="file2" accept=".xlsx,.xls,.csv">
+          <div class="hint">Drop file here, or click to browse</div>
+          <div class="filename" id="name2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="intake" id="intakeOneFile" style="display:none;">
+      <div class="card single-card" id="cardSingle">
+        <span class="tag">Exhibit A + B, one workbook</span>
+        <h3>Workbook</h3>
+        <div class="dropzone" id="dropSingle">
+          <input type="file" id="fileSingle" accept=".xlsx,.xls">
+          <div class="hint">Drop file here, or click to browse</div>
+          <div class="filename" id="nameSingle"></div>
+        </div>
+
+        <div class="sheet-picks" id="sheetPicks">
+          <div class="sheet-pick">
+            <label for="sheetA">Sheet A</label>
+            <select id="sheetA"></select>
+          </div>
+          <div class="sheet-versus">vs.</div>
+          <div class="sheet-pick">
+            <label for="sheetB">Sheet B</label>
+            <select id="sheetB"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="key-group">
+        <label>Match rows by</label>
+        <div class="key-checks" id="keyChecks"></div>
+        <span class="key-hint">Tick more than one column to require all of them to match — e.g. Student ID + Admission Number.</span>
+      </div>
+      <button id="compareBtn" disabled>Compare</button>
+    </div>
+    <div id="status"></div>
+  </section>
+
+  <section id="resultsSection" style="display:none;">
+    <p class="section-label">Findings</p>
+    <div id="results"></div>
+  </section>
+</main>
+
+<footer>Runs entirely in your browser via SheetJS — no file is ever uploaded to a server.<br>Filed by Vinayak "Loon at Zenith" (pls make me head boy or house captain)</footer>
+
+<script>
+const state = { mode: 'twofiles', wb1: null, wb2: null, wbSingle: null };
+
+function setupSlot(cardId, dropId, fileInputId, nameId, wbKey, onLoaded) {
+  const card = document.getElementById(cardId);
+  const drop = document.getElementById(dropId);
+  const input = document.getElementById(fileInputId);
+  const nameEl = document.getElementById(nameId);
+
+  input.addEventListener('change', () => {
+    if (input.files && input.files[0]) handleFile(input.files[0]);
+  });
+
+  drop.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drag-over'); });
+  drop.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault();
+    card.classList.remove('drag-over');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  function handleFile(file) {
+    nameEl.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: 'array', cellDates: false });
+        state[wbKey] = wb;
+        setStatus('');
+        if (onLoaded) onLoaded(wb);
+        refreshKeyOptions();
+        maybeEnableCompare();
+      } catch (err) {
+        setStatus('Could not read "' + file.name + '": ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+function sheetToObjectsByName(wb, name) {
+  const ws = wb.Sheets[name];
+  return XLSX.utils.sheet_to_json(ws, { defval: '', raw: false });
+}
+
+function sheetToObjects(wb) {
+  return sheetToObjectsByName(wb, wb.SheetNames[0]);
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  document.getElementById('intakeTwoFiles').style.display = mode === 'twofiles' ? '' : 'none';
+  document.getElementById('intakeOneFile').style.display = mode === 'onefile' ? '' : 'none';
+  document.getElementById('modeTwoFilesBtn').classList.toggle('active', mode === 'twofiles');
+  document.getElementById('modeOneFileBtn').classList.toggle('active', mode === 'onefile');
+  setStatus('');
+  refreshKeyOptions();
+  maybeEnableCompare();
+}
+
+function populateSheetSelects(wb) {
+  const selA = document.getElementById('sheetA');
+  const selB = document.getElementById('sheetB');
+  selA.innerHTML = '';
+  selB.innerHTML = '';
+  wb.SheetNames.forEach((name, i) => {
+    const optA = document.createElement('option');
+    optA.value = name; optA.textContent = name;
+    if (i === 0) optA.selected = true;
+    selA.appendChild(optA);
+
+    const optB = document.createElement('option');
+    optB.value = name; optB.textContent = name;
+    if (i === 1 || (wb.SheetNames.length === 1 && i === 0)) optB.selected = true;
+    selB.appendChild(optB);
+  });
+  document.getElementById('sheetPicks').classList.add('ready');
+  if (wb.SheetNames.length < 2) {
+    setStatus('This workbook only has one sheet — add a second sheet to compare, or switch to "Two separate files".');
+  }
+}
+
+function getRows1() {
+  if (state.mode === 'twofiles') return state.wb1 ? sheetToObjects(state.wb1) : [];
+  const name = document.getElementById('sheetA').value;
+  return (state.wbSingle && name) ? sheetToObjectsByName(state.wbSingle, name) : [];
+}
+
+function getRows2() {
+  if (state.mode === 'twofiles') return state.wb2 ? sheetToObjects(state.wb2) : [];
+  const name = document.getElementById('sheetB').value;
+  return (state.wbSingle && name) ? sheetToObjectsByName(state.wbSingle, name) : [];
+}
+
+function refreshKeyOptions() {
+  const rows1 = getRows1();
+  const rows2 = getRows2();
+  if (!rows1.length || !rows2.length) return;
+
+  const cols1 = Object.keys(rows1[0]);
+  const cols2 = new Set(Object.keys(rows2[0]));
+  const common = cols1.filter(c => cols2.has(c));
+
+  const previouslyChecked = new Set(getSelectedKeys());
+
+  const group = document.getElementById('keyChecks');
+  group.innerHTML = '';
+
+  if (!common.length) { setStatus('These two sheets share no column names — check the headers match.'); return; }
+
+  const defaults = pickDefaultKeys(common);
+
+  common.forEach(c => {
+    const id = 'key_' + c.replace(/[^a-z0-9]/gi, '_');
+    const wrapper = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.value = c;
+    cb.id = id;
+    cb.checked = previouslyChecked.size ? previouslyChecked.has(c) : defaults.includes(c);
+    cb.addEventListener('change', maybeEnableCompare);
+    wrapper.appendChild(cb);
+    wrapper.appendChild(document.createTextNode(c));
+    group.appendChild(wrapper);
+  });
+}
+
+function getSelectedKeys() {
+  return Array.from(document.querySelectorAll('#keyChecks input:checked')).map(cb => cb.value);
+}
+
+function pickDefaultKeys(common) {
+  const admCol = common.find(c => ADMISSION_CANDIDATES.includes(normalizeHeader(c)));
+  if (admCol) return [admCol];
+  const fallback = pickPreferredKey(common);
+  return fallback ? [fallback] : [];
+}
+
+function maybeEnableCompare() {
+  const ready = state.mode === 'twofiles'
+    ? !!(state.wb1 && state.wb2)
+    : !!(state.wbSingle && state.wbSingle.SheetNames.length >= 2);
+  document.getElementById('compareBtn').disabled = !ready;
+}
+
+function setStatus(msg) {
+  document.getElementById('status').textContent = msg;
+}
+
+function normalizeHeader(c) {
+  return c.toLowerCase().replace(/[.\-_]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function findColumn(cols, candidates) {
+  return cols.find(c => candidates.includes(normalizeHeader(c))) || null;
+}
+
+const NAME_CANDIDATES = ['student name', 'name', 'studentname', 'full name', 'fullname', 'pupil name'];
+const ADMISSION_CANDIDATES = ['admission number', 'admission no', 'admission num', 'admissionnumber', 'adm no', 'adm number', 'admno', 'admission id', 'admission number '];
+const ID_KEY_PRIORITY = [
+  ADMISSION_CANDIDATES,
+  ['student id', 'studentid', 'id no', 'id number'],
+  ['roll number', 'roll no', 'rollnumber', 'rollno'],
+  ['registration number', 'registration no', 'reg no', 'reg number']
+];
+
+function findNameColumn(cols) {
+  return findColumn(cols, NAME_CANDIDATES);
+}
+
+function findAdmissionColumn(cols) {
+  return findColumn(cols, ADMISSION_CANDIDATES);
+}
+
+function pickPreferredKey(common) {
+  for (const group of ID_KEY_PRIORITY) {
+    const hit = common.find(c => group.includes(normalizeHeader(c)));
+    if (hit) return hit;
+  }
+  return common[0];
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function compareSheets() {
+  setStatus('');
+  const keyCols = getSelectedKeys();
+  if (!keyCols.length) { setStatus('Tick at least one column to match rows by.'); return; }
+
+  const rows1 = getRows1();
+  const rows2 = getRows2();
+  if (!rows1.length || !rows2.length) { setStatus('One of the sheets appears to be empty.'); return; }
+  if (state.mode === 'onefile' && document.getElementById('sheetA').value === document.getElementById('sheetB').value) {
+    setStatus('Sheet A and Sheet B are the same sheet — pick two different sheets to compare.');
+    return;
+  }
+
+  const cols1 = Object.keys(rows1[0]);
+  const cols2 = Object.keys(rows2[0]);
+  const nameCol = findNameColumn(cols1) || findNameColumn(cols2);
+  const commonCols = cols1.filter(c => cols2.includes(c) && !keyCols.includes(c));
+
+  const compositeKey = row => keyCols.map(k => String(row[k] ?? '').trim()).join('||');
+
+  const map1 = new Map();
+  const map2 = new Map();
+  rows1.forEach(r => map1.set(compositeKey(r), r));
+  rows2.forEach(r => map2.set(compositeKey(r), r));
+
+  const allKeys = new Set([...map1.keys(), ...map2.keys()]);
+  const mismatches = [];
+
+  allKeys.forEach(key => {
+    const r1 = map1.get(key);
+    const r2 = map2.get(key);
+    const keyValues = {};
+    keyCols.forEach(k => { keyValues[k] = (r1 && r1[k]) ?? (r2 && r2[k]) ?? ''; });
+
+    if (r1 && !r2) {
+      const name = r1[nameCol] || '—';
+      commonCols.forEach(col => {
+        const v1 = (r1[col] ?? '').toString().trim();
+        mismatches.push({ keyValues, name, column: col, v1, v2: '(row missing)', presence: true });
+      });
+      return;
+    }
+    if (r2 && !r1) {
+      const name = r2[nameCol] || '—';
+      commonCols.forEach(col => {
+        const v2 = (r2[col] ?? '').toString().trim();
+        mismatches.push({ keyValues, name, column: col, v1: '(row missing)', v2, presence: true });
+      });
+      return;
+    }
+
+    const name = (r1 && r1[nameCol]) || (r2 && r2[nameCol]) || '—';
+    commonCols.forEach(col => {
+      const v1 = (r1[col] ?? '').toString().trim();
+      const v2 = (r2[col] ?? '').toString().trim();
+      if (v1 !== v2) mismatches.push({ keyValues, name, column: col, v1, v2, presence: false });
+    });
+  });
+
+  renderResults(mismatches, allKeys.size, keyCols);
+}
+
+function renderResults(mismatches, rowCount, keyCols) {
+  document.getElementById('resultsSection').style.display = '';
+  const container = document.getElementById('results');
+  const flaggedKeys = new Set(mismatches.map(m => keyCols.map(k => m.keyValues[k]).join('||')));
+
+  const sheet1Label = state.mode === 'twofiles' ? 'Sheet 1' : document.getElementById('sheetA').value;
+  const sheet2Label = state.mode === 'twofiles' ? 'Sheet 2' : document.getElementById('sheetB').value;
+
+  const summaryHtml = `
+    <div class="summary">
+      <div class="stat"><span class="n">${rowCount}</span><span class="l">Students matched</span></div>
+      <div class="stat flagged"><span class="n">${mismatches.length}</span><span class="l">Discrepancies</span></div>
+      <div class="stat"><span class="n">${flaggedKeys.size}</span><span class="l">Students affected</span></div>
+    </div>
+  `;
+
+  if (mismatches.length === 0) {
+    container.innerHTML = summaryHtml + `<div class="empty-state"><span class="stamp">Approved — no discrepancies</span></div>`;
+    return;
+  }
+
+  const rowsHtml = mismatches.map(m => {
+    const v1Cell = `<span class="stampval diff">${escapeHtml(m.v1)}</span>`;
+    const v2Cell = `<span class="stampval diff">${escapeHtml(m.v2)}</span>`;
+    const keyCells = keyCols.map(k => `<td class="id">${escapeHtml(m.keyValues[k])}</td>`).join('');
+    const mismatchedText = `${m.column} mismatched`;
+    return `
+      <tr>
+        ${keyCells}
+        <td class="name">${escapeHtml(m.name)}</td>
+        <td class="col-name">${escapeHtml(m.column)}</td>
+        <td>${v1Cell}</td>
+        <td>${v2Cell}</td>
+        <td class="col-name">${escapeHtml(mismatchedText)}</td>
+      </tr>`;
+  }).join('');
+
+  const keyHeaders = keyCols.map(k => `<th>${escapeHtml(k)}</th>`).join('');
+
+  container.innerHTML = summaryHtml + `
+    <div class="toolbar">
+      <span class="count">${mismatches.length} discrepanc${mismatches.length === 1 ? 'y' : 'ies'} on file</span>
+      <button id="downloadBtn">Download report (.csv)</button>
+    </div>
+    <div class="table-wrap">
+      <table id="report">
+        <thead><tr>${keyHeaders}<th>Student Name</th><th>Column</th><th>${escapeHtml(sheet1Label)}</th><th>${escapeHtml(sheet2Label)}</th><th>Mismatched</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+  `;
+
+  document.getElementById('downloadBtn').addEventListener('click', () => downloadCsv(mismatches, sheet1Label, sheet2Label, keyCols));
+}
+
+function downloadCsv(mismatches, sheet1Label, sheet2Label, keyCols) {
+  const header = [...keyCols, 'Student Name', 'Column', sheet1Label, sheet2Label, 'Mismatched'];
+  const esc = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const lines = [header.map(esc).join(',')];
+  mismatches.forEach(m => {
+    const mismatchedText = `${m.column} mismatched`;
+    const row = [...keyCols.map(k => m.keyValues[k]), m.name, m.column, m.v1, m.v2, mismatchedText];
+    lines.push(row.map(esc).join(','));
+  });
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'mismatches.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+setupSlot('card1', 'drop1', 'file1', 'name1', 'wb1');
+setupSlot('card2', 'drop2', 'file2', 'name2', 'wb2');
+setupSlot('cardSingle', 'dropSingle', 'fileSingle', 'nameSingle', 'wbSingle', populateSheetSelects);
+
+document.getElementById('sheetA').addEventListener('change', () => { refreshKeyOptions(); maybeEnableCompare(); });
+document.getElementById('sheetB').addEventListener('change', () => { refreshKeyOptions(); maybeEnableCompare(); });
+
+document.getElementById('modeTwoFilesBtn').addEventListener('click', () => setMode('twofiles'));
+document.getElementById('modeOneFileBtn').addEventListener('click', () => setMode('onefile'));
+
+document.getElementById('compareBtn').addEventListener('click', compareSheets);
+</script>
+
+</body>
+</html>
